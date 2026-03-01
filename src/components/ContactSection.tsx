@@ -2,11 +2,31 @@ import { useState, FormEvent } from "react";
 import { Send } from "lucide-react";
 
 const ContactSection = () => {
-  const [submitted, setSubmitted] = useState(false);
+const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    const form = e.target as HTMLFormElement;
+    const data = {
+      name: (form.elements.namedItem("name") as HTMLInputElement).value.trim(),
+      email: (form.elements.namedItem("email") as HTMLInputElement).value.trim(),
+      company: (form.elements.namedItem("company") as HTMLInputElement).value.trim(),
+      message: (form.elements.namedItem("message") as HTMLTextAreaElement).value.trim(),
+    };
+    try {
+      await fetch("https://hook.eu1.make.com/6sxm4ngjvaxppl5dl6lh9oqb2dfaj40g", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      setSubmitted(true);
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -77,9 +97,10 @@ const ContactSection = () => {
               </div>
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-md gradient-cyan px-6 py-3 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:shadow-accent/35 transition-all"
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md gradient-cyan px-6 py-3 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/20 hover:shadow-accent/35 transition-all disabled:opacity-60"
               >
-                Send Message
+                {submitting ? "Sending..." : "Send Message"}
                 <Send className="h-4 w-4" />
               </button>
             </form>
