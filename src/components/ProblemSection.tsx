@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock, Users, TrendingDown } from "lucide-react";
+import { Clock, AlertTriangle, Users } from "lucide-react";
 
 const problems = [
   {
@@ -16,11 +16,6 @@ const problems = [
     title: "Candidate Overload",
     description: "Job postings attract hundreds of applications, most irrelevant to the role.",
   },
-  {
-    icon: TrendingDown,
-    title: "Poor Retention Rates",
-    description: "Bad-fit hires cost companies up to 30% of the employee's annual salary.",
-  },
 ];
 
 const ProblemSection = () => {
@@ -32,24 +27,17 @@ const ProblemSection = () => {
           <h2 className="font-display text-3xl md:text-4xl font-bold text-secondary-foreground">
             Traditional Hiring is Broken
           </h2>
-          <p className="mt-4 text-muted-foreground">
-            Companies lose thousands of hours and millions of dollars on inefficient, biased recruiting processes.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {problems.map((problem) => (
             <div
               key={problem.title}
-              className="flex gap-4 p-6 rounded-lg border border-border bg-background/50 backdrop-blur-sm hover:border-accent/30 transition-colors"
+              className="flex flex-col items-center text-center gap-3 p-6 rounded-lg border border-border bg-background/50"
             >
-              <div className="flex-shrink-0 mt-1">
-                <problem.icon className="h-5 w-5 text-accent" />
-              </div>
-              <div>
-                <h3 className="font-display font-semibold text-foreground mb-1">{problem.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{problem.description}</p>
-              </div>
+              <problem.icon className="h-5 w-5 text-accent" />
+              <h3 className="font-display font-semibold text-foreground">{problem.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{problem.description}</p>
             </div>
           ))}
         </div>
