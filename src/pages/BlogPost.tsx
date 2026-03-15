@@ -1,17 +1,36 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BlogLeadForm from "@/components/BlogLeadForm";
 import RequestDemoModal from "@/components/RequestDemoModal";
-import { blogPosts } from "@/data/blogPosts";
+import { supabase } from "@/integrations/supabase/client";
+import { blogPosts as staticPosts } from "@/data/blogPosts";
 import { useState } from "react";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = blogPosts.find((p) => p.slug === slug && p.published);
   const [demoOpen, setDemoOpen] = useState(false);
+
+  const { data: dbPost } = useQuery({
+    queryKey: ["blog-post", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("slug", slug!)
+        .eq("published", true)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!slug,
+  });
+
+  // Fall back to static post
+  const post = dbPost || staticPosts.find((p) => p.slug === slug && p.published);
 
   if (!post) {
     return (
@@ -55,10 +74,8 @@ const BlogPost = () => {
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
           />
 
-          {/* Lead Form */}
           <BlogLeadForm />
 
-          {/* Request Demo CTA */}
           <div className="mt-12 text-center">
             <button
               onClick={() => setDemoOpen(true)}

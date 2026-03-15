@@ -1,11 +1,27 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { blogPosts } from "@/data/blogPosts";
+import { supabase } from "@/integrations/supabase/client";
+import { blogPosts as staticPosts } from "@/data/blogPosts";
 
 const BlogListing = () => {
-  const published = blogPosts.filter((p) => p.published);
+  const { data: dbPosts } = useQuery({
+    queryKey: ["blog-posts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("title, slug, excerpt, date, author")
+        .eq("published", true)
+        .order("date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Use DB posts if available, fall back to static
+  const posts = dbPosts && dbPosts.length > 0 ? dbPosts : staticPosts.filter((p) => p.published);
 
   return (
     <div className="min-h-screen bg-background">
@@ -23,7 +39,7 @@ const BlogListing = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {published.map((post) => (
+            {posts.map((post) => (
               <Link
                 key={post.slug}
                 to={`/blog/${post.slug}`}
