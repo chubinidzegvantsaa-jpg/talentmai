@@ -21,7 +21,7 @@ const RequestDemoModal = ({ open, onClose }: RequestDemoModalProps) => {
       message: (form.elements.namedItem("demo-message") as HTMLTextAreaElement).value.trim(),
     };
     try {
-      await fetch("https://hook.eu1.make.com/6sxm4ngjvaxppl5dl6lh9oqb2dfaj40g", {
+      await fetch("https://hook.eu1.make.com/knooqa8qv75yfh722qhyxaha22ducte5", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
